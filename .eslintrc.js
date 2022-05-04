@@ -2,10 +2,16 @@ module.exports = {
   'env': {
     'node': true,
     'commonjs': true,
-    'es6': true
+    'es6': true,
+    "jest/globals": true
   },
+  plugins: [
+    'jest'
+  ],
   'extends': [
-    'eslint:recommended'
+    'eslint:recommended',
+    'plugin:jest/recommended',
+    'plugin:jest/style'
   ],
   'globals': {
     'Atomics': 'readonly',
@@ -59,6 +65,7 @@ module.exports = {
     'computed-property-spacing': ['error', 'never'],
     'no-underscore-dangle': 0,
     'no-multi-spaces': ['error', { 'exceptions': { 'VariableDeclarator': true, 'ImportDeclaration': true, 'AssignmentExpression': true } }],
+    // 'no-param-reassign': ['error', { 'props': false }],
     'no-empty-function': 'error',
     'no-loop-func': 'error',
     'no-undefined': 'error',

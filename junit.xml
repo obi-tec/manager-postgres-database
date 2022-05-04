@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="1" failures="0" errors="0" time="1.32">
+  <testsuite name="Check database connection" errors="0" failures="0" skipped="0" timestamp="2022-05-04T15:08:23" time="0.84" tests="1">
+    <testcase classname="Check database connection Should throw an error if you try instanciate database" name="Check database connection Should throw an error if you try instanciate database" time="0.016">
+    </testcase>
+  </testsuite>
+</testsuites>
