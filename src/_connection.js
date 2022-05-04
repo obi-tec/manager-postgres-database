@@ -20,6 +20,28 @@ const _camelizeKeys = (obj) => {
   return obj;
 };
 
+const _validateEnvironmentVariables = (isRead) => {
+  if (isRead) {
+    if (typeof process.env.RO_DB_HOST === 'undefined'
+      || typeof process.env.RO_DB_PORT === 'undefined'
+      || typeof process.env.RO_DB_USER === 'undefined'
+      || typeof process.env.RO_DB_PASSWORD === 'undefined'
+      || typeof process.env.RO_DB_DATABASE === 'undefined') {
+      return false;
+    }
+  } else {
+    if (typeof process.env.DB_HOST === 'undefined'
+      || typeof process.env.DB_PORT === 'undefined'
+      || typeof process.env.DB_USER === 'undefined'
+      || typeof process.env.DB_PASSWORD === 'undefined'
+      || typeof process.env.DB_DATABASE === 'undefined') {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 let instance;
 
 class Database {
@@ -34,6 +56,10 @@ class Database {
   async connect({enableLogs = false, camelizeKeys = true} = {}) {
     this.enableLogs   = enableLogs;
     this.camelizeKeys = camelizeKeys;
+
+    if (!_validateEnvironmentVariables(this.isRead)) {
+      throw new Error('You must set the environment variables to use this package. See docs!');
+    }
 
     let connectionSettings = {
       application_name : process.env.APPLICATION_NAME,
