@@ -1,0 +1,17 @@
+# git
+.gitignore
+
+# lint
+.eslintrc
+
+# code
+.vscode
+
+# test
+test/*
+
+# npm
+.npmrc
+
+# gitbu
+.github

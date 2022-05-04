@@ -1,0 +1,42 @@
+{
+  "name": "@obi-tec/manager-postgres-database",
+  "version": "1.0.0",
+  "description": "A simple library to help developers to manage connections and queries on postgres database",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint src/**",
+    "lintfix": "eslint src/** --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "eslintIgnore": [
+    ".eslintrc.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/obi-tec/manager-postgres-database.git"
+  },
+  "keywords": [
+    "node-js",
+    "postgres",
+    "database"
+  ],
+  "author": "Obi Tec",
+  "license": "Apache License",
+  "bugs": {
+    "url": "https://github.com/obi-tec/manager-postgres-database/issues"
+  },
+  "homepage": "https://github.com/obi-tec/manager-postgres-database#readme",
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "eslint": "^8.14.0",
+    "eslint-plugin-jest": "^26.0.0",
+    "jest": "^27.4.7",
+    "jest-extended": "^2.0.0",
+    "jest-junit": "^13.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "pg": "^8.7.3",
+    "pg-format": "^1.0.4"
+  }
+}
