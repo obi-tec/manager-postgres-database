@@ -6,7 +6,7 @@
 
 <a name="description"></a>
 
-# manager-postgres-database
+# Manager Postgres Database
 <p align="center">🚀 A simple library to help developers to manage connections and queries on postgres database</p>
 
 
