@@ -2,6 +2,7 @@
 const _        = require('lodash');
 const { Pool } = require('pg');
 const pgFormat = require('pg-format');
+const logger   = require('@obi-tec/logger-console');
 
 // privates
 const _camelizeKeys = (obj) => {
@@ -24,11 +25,16 @@ let instance;
 class Database {
   constructor(read = false) {
     /** @type {import("pg").PoolClient} */
-    this.poolClient = null;
-    this.isRead     = read;
+    this.poolClient   = null;
+    this.isRead       = read;
+    this.enableLogs   = false;
+    this.camelizeKeys = true;
   }
 
-  async connect() {
+  async connect({enableLogs = false, camelizeKeys = true} = {}) {
+    this.enableLogs   = enableLogs;
+    this.camelizeKeys = camelizeKeys;
+
     let connectionSettings = {
       application_name : process.env.APPLICATION_NAME,
       min              : process.env.POOL_MIN || 0,
@@ -60,7 +66,13 @@ class Database {
     }
 
     const pool      = new Pool(connectionSettings);
-    this.poolClient = await pool.connect();
+    const initOpenConnection  = Date.now();
+    this.poolClient           = await pool.connect();
+    const endOpenConnection   = Date.now();
+
+    if (this.enableLogs) {
+      logger.info('Time to open connection database', endOpenConnection - initOpenConnection); 
+    }
   }
   
   /**
@@ -87,7 +99,7 @@ class Database {
 
     return this.poolClient.query(query)
       .then(result => {
-        return _camelizeKeys(result.rows);
+        return this.camelizeKeys ? _camelizeKeys(result.rows) : result.rows;
       })
       .catch(err => {
         return Promise.reject(err);
@@ -115,7 +127,7 @@ class Database {
     return this.poolClient.query(query)
       .then(result => {
         if (result.rowCount > 0) {
-          return _camelizeKeys(result.rows[0]);
+          return this.camelizeKeys ? _camelizeKeys(result.rows[0]) : result.rows[0];
         }
         return null;
       })

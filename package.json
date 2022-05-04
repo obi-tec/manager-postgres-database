@@ -36,6 +36,7 @@
     "jest-junit": "^13.0.0"
   },
   "dependencies": {
+    "@obi-tec/logger-console": "^1.0.3",
     "lodash": "^4.17.21",
     "pg": "^8.7.3",
     "pg-format": "^1.0.4"
