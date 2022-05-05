@@ -139,9 +139,13 @@ class Database {
  * @param {Array.<object>} values - Parameters passed to query
  * @return {Promise.<Object>} Promise with a result rows.
  */
-  async queryFirstOrNull (name, text, values = []) {
+  async queryFirstOrNull (name, text, values = [], scapeValues = []) {
     if (!this.poolClient) {
       throw new Error('You must initialize connection database before querying');
+    }
+
+    if (scapeValues.length) {
+      text = pgFormat(text, ...scapeValues);
     }
 
     const query = {
