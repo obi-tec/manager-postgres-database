@@ -15,7 +15,6 @@
 ###  🏁 Content
 <!--ts-->
    * [Install](#install)
-   * [Environment Variables](#environment-variables)
    * [How to use](#how-to-use)
    * [Status](#status)
 <!--te-->
@@ -30,28 +29,6 @@ npm install @obi-tec/manager-postgres-database
 See all tags clicking <a href="https://github.com/obi-tec/manager-postgres-database/tags"> here</a>.
 
 <br>
-<a name="environment-variables"></a>
-
-# Environment Variables
-```env
-  APPLICATION_NAME='api-name-dev-v1'
-
-  # Options for database master:
-  DB_HOST='localhost:9090'
-  DB_PORT='5432'
-  DB_USER='postgres'
-  DB_PASSWORD=''
-  DB_DATABASE='postgres'`
-
-  # Options for database read:
-  RO_DB_HOST='localhost:9090'
-  RO_DB_PORT='5432'
-  RO_DB_USER='postgres'
-  RO_DB_PASSWORD=''
-  RO_DB_DATABASE='postgres'
-```
-
-<br>
 <a name="how-to-use"></a>
 # How to Use
 In your file.js, import the dependency and extract the DatabaseConnection.
@@ -60,6 +37,26 @@ In your file.js, import the dependency and extract the DatabaseConnection.
   const { DatabaseConnection } = require('@obi-tec/manager-postgres-database');
 ```
 
+<br>
+
+### Setup Connection
+``` javascript
+  DatabaseConnection.getInstance({
+    connectionName = 'default',
+    connectionSettings = {
+      application_name : '',
+      min              : 0,
+      max              : 1,
+      host             : 'localhost',
+      port             : '5432',
+      user             : 'postgres',
+      password         : 'postgres',
+      database         : 'postgres'
+    },
+    enableLogs = false,
+    camelizeKeys = true
+  });
+```
 <br>
 
 ### Using DatabaseConnection

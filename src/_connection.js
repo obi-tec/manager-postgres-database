@@ -20,87 +20,36 @@ const _camelizeKeys = (obj) => {
   return obj;
 };
 
-const _validateEnvironmentVariables = (isRead) => {
-  if (isRead) {
-    if (typeof process.env.RO_DB_HOST === 'undefined'
-      || typeof process.env.RO_DB_PORT === 'undefined'
-      || typeof process.env.RO_DB_USER === 'undefined'
-      || typeof process.env.RO_DB_PASSWORD === 'undefined'
-      || typeof process.env.RO_DB_DATABASE === 'undefined') {
-      return false;
-    }
-  } else {
-    if (typeof process.env.DB_HOST === 'undefined'
-      || typeof process.env.DB_PORT === 'undefined'
-      || typeof process.env.DB_USER === 'undefined'
-      || typeof process.env.DB_PASSWORD === 'undefined'
-      || typeof process.env.DB_DATABASE === 'undefined') {
-      return false;
-    }
-  }
-
-  return true;
-};
-
-let instance;
+const instances = {};
 
 class Database {
-  constructor(read = false) {
+  constructor(connectionName = 'default', connectionSettings = {}, enableLogs = false, camelizeKeys = true) {
     /** @type {import("pg").PoolClient} */
-    this.poolClient   = null;
-    this.isRead       = read;
-    this.enableLogs   = false;
-    this.camelizeKeys = true;
+    this.connectionName     = connectionName;
+    this.connectionSettings = connectionSettings;
+    this.enableLogs         = enableLogs;
+    this.camelizeKeys       = camelizeKeys;
+    this.poolClient         = null;
   }
 
-  async connect({enableLogs = false, camelizeKeys = true} = {}) {
-    this.enableLogs   = enableLogs;
-    this.camelizeKeys = camelizeKeys;
-
-    if (!_validateEnvironmentVariables(this.isRead)) {
-      throw new Error('You must set the environment variables to use this package. See docs!');
-    }
-
-    let connectionSettings = {
-      application_name : process.env.APPLICATION_NAME,
-      min              : process.env.POOL_MIN || 0,
-      max              : process.env.POOL_MAX || 1,
-
+  async connect() {
+    const connectionSettings = {
       idleTimeoutMillis       : 5000,
       connectionTimeoutMillis : 10000,
-      allowExitOnIdle         : true
+      allowExitOnIdle         : true,
+      ...this.connectionSettings
     };
 
-    if (this.isRead) {
-      connectionSettings = {
-        ...connectionSettings,        
-        host     : process.env.RO_DB_HOST,
-        port     : process.env.RO_DB_PORT,
-        user     : process.env.RO_DB_USER,
-        password : process.env.RO_DB_PASSWORD,
-        database : process.env.RO_DB_DATABASE
-      };
-    } else {
-      connectionSettings = {
-        ...connectionSettings,  
-        host     : process.env.DB_HOST,
-        port     : process.env.DB_PORT,
-        user     : process.env.DB_USER,
-        password : process.env.DB_PASSWORD,
-        database : process.env.DB_DATABASE
-      };
-    }
-
-    const pool      = new Pool(connectionSettings);
-    const initOpenConnection  = Date.now();
-    this.poolClient           = await pool.connect();
-    const endOpenConnection   = Date.now();
+    const pool               = new Pool(connectionSettings);
+    const initOpenConnection = Date.now();
+    this.poolClient          = await pool.connect();
+    const endOpenConnection  = Date.now();
 
     if (this.enableLogs) {
-      logger.info('Time to open connection database', endOpenConnection - initOpenConnection); 
+      logger.info('Time to open connection database', endOpenConnection - initOpenConnection);
     }
   }
-  
+
   /**
  * This method execute a query.
  * @param {string} name - Name of query.
@@ -110,7 +59,7 @@ class Database {
  */
   async query (name, text, values = [], scapeValues = []) {
     if (!this.poolClient) {
-      throw new Error('You must initialize connection database before querying');
+      await this.connect();
     }
 
     if (scapeValues.length) {
@@ -141,7 +90,7 @@ class Database {
  */
   async queryFirstOrNull (name, text, values = [], scapeValues = []) {
     if (!this.poolClient) {
-      throw new Error('You must initialize connection database before querying');
+      await this.connect();
     }
 
     if (scapeValues.length) {
@@ -182,11 +131,25 @@ class DatabaseConnection {
   /**
    * @returns {Database}
    */
-  static getInstance(read) {
-    if (!instance) {
-      instance = new Database(read);
+  static getInstance({
+    connectionName = 'default',
+    connectionSettings = {
+      application_name : '',
+      min              : 0,
+      max              : 1,
+      host             : 'localhost',
+      port             : '5432',
+      user             : 'postgres',
+      password         : 'postgres',
+      database         : 'postgres'
+    },
+    enableLogs = false,
+    camelizeKeys = true
+  }) {
+    if (typeof instances[connectionName] === 'undefined') {
+      instances[connectionName] = new Database(connectionName, connectionSettings, enableLogs, camelizeKeys);
     }
-    return instance;
+    return instances[connectionName];
   }
 }
 
