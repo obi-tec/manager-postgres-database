@@ -1,6 +1,6 @@
 {
   "name": "@obi-tec/manager-postgres-database",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A simple library to help developers to manage connections and queries on postgres database",
   "main": "src/index.js",
   "private": false,
@@ -37,7 +37,9 @@
     "jest-junit": "^13.0.0"
   },
   "dependencies": {
+    "@obi-tec/express-response-models": "^1.0.3",
     "@obi-tec/logger-console": "^1.0.3",
+    "knex": "^2.3.0",
     "lodash": "^4.17.21",
     "pg": "^8.7.3",
     "pg-format": "^1.0.4"
