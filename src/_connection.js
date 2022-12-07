@@ -157,7 +157,6 @@ class DatabaseConnection {
    */
   static getInstance(
     connectionName = 'default',
-    isRead = false,
     {
       connectionSettings = {
         application_name : '',
@@ -179,9 +178,10 @@ class DatabaseConnection {
         password         : '',
         database         : ''
       },
+      isRead = false,
       enableLogs = false,
       camelizeKeys = true
-    }) {
+    } = {}) {
     if (typeof instances[connectionName] === 'undefined') {
       instances[connectionName] = new Database(connectionName, connectionSettings, readConnectionSettings, isRead, enableLogs, camelizeKeys);
     }
