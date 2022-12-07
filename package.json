@@ -1,6 +1,6 @@
 {
   "name": "@obi-tec/manager-postgres-database",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A simple library to help developers to manage connections and queries on postgres database",
   "main": "src/index.js",
   "private": false,

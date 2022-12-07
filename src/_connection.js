@@ -42,7 +42,17 @@ class Database {
       ...this.connectionSettings
     };
 
-    if (this.isRead) {
+    if (this.isRead && this.readConnectionSettings?.host) {
+      connectionSettings = {
+        ...connectionSettings,
+        ...this.readConnectionSettings
+      };
+    } else if (!this.isRead && this.connectionSettings?.host) {
+      connectionSettings = {
+        ...connectionSettings,
+        ...this.connectionSettings
+      };
+    } else if (this.readConnectionSettings?.host) {
       connectionSettings = {
         ...connectionSettings,
         ...this.readConnectionSettings
@@ -153,21 +163,21 @@ class DatabaseConnection {
         application_name : '',
         min              : 0,
         max              : 1,
-        host             : 'localhost',
-        port             : '5432',
-        user             : 'postgres',
-        password         : 'postgres',
-        database         : 'postgres'
+        host             : '',
+        port             : '',
+        user             : '',
+        password         : '',
+        database         : ''
       },
       readConnectionSettings = {
         application_name : '',
         min              : 0,
         max              : 1,
-        host             : 'localhost',
-        port             : '5432',
-        user             : 'postgres',
-        password         : 'postgres',
-        database         : 'postgres'
+        host             : '',
+        port             : '',
+        user             : '',
+        password         : '',
+        database         : ''
       },
       enableLogs = false,
       camelizeKeys = true
