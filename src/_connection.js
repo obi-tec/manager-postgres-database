@@ -23,22 +23,36 @@ const _camelizeKeys = (obj) => {
 const instances = {};
 
 class Database {
-  constructor(connectionName = 'default', connectionSettings = {}, enableLogs = false, camelizeKeys = true) {
+  constructor(connectionName = 'default', connectionSettings = {}, readConnectionSettings = {}, isRead = false, enableLogs = false, camelizeKeys = true) {
     /** @type {import("pg").PoolClient} */
-    this.connectionName     = connectionName;
-    this.connectionSettings = connectionSettings;
-    this.enableLogs         = enableLogs;
-    this.camelizeKeys       = camelizeKeys;
-    this.poolClient         = null;
+    this.connectionName         = connectionName;
+    this.connectionSettings     = connectionSettings;
+    this.readConnectionSettings = readConnectionSettings;
+    this.isRead                 = isRead;
+    this.enableLogs             = enableLogs;
+    this.camelizeKeys           = camelizeKeys;
+    this.poolClient             = null;
   }
 
   async connect() {
-    const connectionSettings = {
+    let connectionSettings = {
       idleTimeoutMillis       : 5000,
       connectionTimeoutMillis : 10000,
       allowExitOnIdle         : true,
       ...this.connectionSettings
     };
+
+    if (this.isRead) {
+      connectionSettings = {
+        ...connectionSettings,
+        ...this.readConnectionSettings
+      };
+    } else {
+      connectionSettings = {
+        ...connectionSettings,
+        ...this.connectionSettings
+      };
+    }
 
     const pool               = new Pool(connectionSettings);
     const initOpenConnection = Date.now();
@@ -131,24 +145,38 @@ class DatabaseConnection {
   /**
    * @returns {Database}
    */
-  static getInstance({
+  static getInstance(
     connectionName = 'default',
-    connectionSettings = {
-      application_name : '',
-      min              : 0,
-      max              : 1,
-      host             : 'localhost',
-      port             : '5432',
-      user             : 'postgres',
-      password         : 'postgres',
-      database         : 'postgres'
-    },
-    enableLogs = false,
-    camelizeKeys = true
-  }) {
+    isRead = false,
+    {
+      connectionSettings = {
+        application_name : '',
+        min              : 0,
+        max              : 1,
+        host             : 'localhost',
+        port             : '5432',
+        user             : 'postgres',
+        password         : 'postgres',
+        database         : 'postgres'
+      },
+      readConnectionSettings = {
+        application_name : '',
+        min              : 0,
+        max              : 1,
+        host             : 'localhost',
+        port             : '5432',
+        user             : 'postgres',
+        password         : 'postgres',
+        database         : 'postgres'
+      },
+      enableLogs = false,
+      camelizeKeys = true
+    }) {
     if (typeof instances[connectionName] === 'undefined') {
-      instances[connectionName] = new Database(connectionName, connectionSettings, enableLogs, camelizeKeys);
+      instances[connectionName] = new Database(connectionName, connectionSettings, readConnectionSettings, isRead, enableLogs, camelizeKeys);
     }
+
+    instances[connectionName].isRead = isRead;
     return instances[connectionName];
   }
 }

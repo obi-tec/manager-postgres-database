@@ -41,21 +41,34 @@ In your file.js, import the dependency and extract the DatabaseConnection.
 
 ### Setup Connection
 ``` javascript
-  DatabaseConnection.getInstance({
-    connectionName = 'default',
-    connectionSettings = {
-      application_name : '',
-      min              : 0,
-      max              : 1,
-      host             : 'localhost',
-      port             : '5432',
-      user             : 'postgres',
-      password         : 'postgres',
-      database         : 'postgres'
-    },
-    enableLogs = false,
-    camelizeKeys = true
-  });
+  DatabaseConnection.getInstance(
+    'default',
+    true,
+    {
+      connectionSettings : {
+        application_name : '',
+        min              : 0,
+        max              : 1,
+        host             : 'localhost',
+        port             : '5432',
+        user             : 'postgres',
+        password         : 'postgres',
+        database         : 'postgres'
+      },
+      readConnectionSettings : {
+        application_name : '',
+        min              : 0,
+        max              : 1,
+        host             : 'localhost',
+        port             : '5432',
+        user             : 'postgres',
+        password         : 'postgres',
+        database         : 'postgres'
+      },
+      enableLogs   : false,
+      camelizeKeys : true
+    }
+  );
 ```
 <br>
 
