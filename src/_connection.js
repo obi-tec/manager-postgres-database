@@ -23,7 +23,7 @@ const _camelizeKeys = (obj) => {
 const instances = {};
 
 class Database {
-  constructor(connectionName = 'default', connectionSettings = {}, readConnectionSettings = {}, isRead = false, enableLogs = false, camelizeKeys = true, snakeQuery = false) {
+  constructor(connectionName = 'default', connectionSettings = {}, readConnectionSettings = {}, isRead = false, enableLogs = false, camelizeKeys = true) {
     /** @type {import("pg").PoolClient} */
     this.connectionName         = connectionName;
     this.connectionSettings     = connectionSettings;
@@ -31,7 +31,6 @@ class Database {
     this.isRead                 = isRead;
     this.enableLogs             = enableLogs;
     this.camelizeKeys           = camelizeKeys;
-    this.snakeQuery             = snakeQuery;
     this.poolClient             = null;
   }
 
@@ -92,7 +91,7 @@ class Database {
     }
 
     const query = {
-      name: this.snakeQuery ? _.snakeCase(name) : name,
+      name,
       text,
       values
     };
@@ -123,7 +122,7 @@ class Database {
     }
 
     const query = {
-      name: this.snakeQuery ? _.snakeCase(name) : name,
+      name,
       text,
       values
     };
@@ -181,11 +180,10 @@ class DatabaseConnection {
       },
       isRead = false,
       enableLogs = false,
-      camelizeKeys = true,
-      snakeQuery = false
+      camelizeKeys = true
     } = {}) {
     if (typeof instances[connectionName] === 'undefined') {
-      instances[connectionName] = new Database(connectionName, connectionSettings, readConnectionSettings, isRead, enableLogs, camelizeKeys, snakeQuery);
+      instances[connectionName] = new Database(connectionName, connectionSettings, readConnectionSettings, isRead, enableLogs, camelizeKeys);
     }
 
     instances[connectionName].isRead = isRead;
