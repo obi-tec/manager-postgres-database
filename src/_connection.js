@@ -23,46 +23,22 @@ const _camelizeKeys = (obj) => {
 const instances = {};
 
 class Database {
-  constructor(connectionName = 'default', connectionSettings = {}, readConnectionSettings = {}, isRead = false, enableLogs = false, camelizeKeys = true) {
+  constructor(connectionName = 'default', connectionSettings = {}, enableLogs = false, camelizeKeys = true) {
     /** @type {import("pg").PoolClient} */
-    this.connectionName         = connectionName;
-    this.connectionSettings     = connectionSettings;
-    this.readConnectionSettings = readConnectionSettings;
-    this.isRead                 = isRead;
-    this.enableLogs             = enableLogs;
-    this.camelizeKeys           = camelizeKeys;
-    this.poolClient             = null;
+    this.connectionName     = connectionName;
+    this.connectionSettings = connectionSettings;
+    this.enableLogs         = enableLogs;
+    this.camelizeKeys       = camelizeKeys;
+    this.poolClient         = null;
   }
 
   async connect() {
-    let connectionSettings = {
+    const connectionSettings = {
       idleTimeoutMillis       : 5000,
       connectionTimeoutMillis : 10000,
       allowExitOnIdle         : true,
       ...this.connectionSettings
     };
-
-    if (this.isRead && this.readConnectionSettings?.host) {
-      connectionSettings = {
-        ...connectionSettings,
-        ...this.readConnectionSettings
-      };
-    } else if (!this.isRead && this.connectionSettings?.host) {
-      connectionSettings = {
-        ...connectionSettings,
-        ...this.connectionSettings
-      };
-    } else if (this.readConnectionSettings?.host) {
-      connectionSettings = {
-        ...connectionSettings,
-        ...this.readConnectionSettings
-      };
-    } else {
-      connectionSettings = {
-        ...connectionSettings,
-        ...this.connectionSettings
-      };
-    }
 
     const pool               = new Pool(connectionSettings);
     const initOpenConnection = Date.now();
@@ -157,36 +133,23 @@ class DatabaseConnection {
    */
   static getInstance(
     connectionName = 'default',
-    {
-      connectionSettings = {
-        application_name : '',
-        min              : 0,
-        max              : 1,
-        host             : '',
-        port             : '',
-        user             : '',
-        password         : '',
-        database         : ''
-      },
-      readConnectionSettings = {
-        application_name : '',
-        min              : 0,
-        max              : 1,
-        host             : '',
-        port             : '',
-        user             : '',
-        password         : '',
-        database         : ''
-      },
-      isRead = false,
-      enableLogs = false,
-      camelizeKeys = true
-    } = {}) {
+    connectionSettings = {
+      application_name : '',
+      min              : 0,
+      max              : 1,
+      host             : '',
+      port             : '',
+      user             : '',
+      password         : '',
+      database         : ''
+    },
+    enableLogs = false,
+    camelizeKeys = true
+  ) {
     if (typeof instances[connectionName] === 'undefined') {
-      instances[connectionName] = new Database(connectionName, connectionSettings, readConnectionSettings, isRead, enableLogs, camelizeKeys);
+      instances[connectionName] = new Database(connectionName, connectionSettings, enableLogs, camelizeKeys);
     }
 
-    instances[connectionName].isRead = isRead;
     return instances[connectionName];
   }
 }
