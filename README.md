@@ -86,7 +86,7 @@ Example:
   // await DatabaseConnection.getInstance(true).connect();
 
   const user = await DatabaseConnection.getInstance().queryFirstOrNull('getUserById', query, [userId]);
-  await DatabaseConnection.getInstance().disconnect();
+  await DatabaseConnection.getInstance().closeConnection();
 ```
 <br>
 <a name="status"></a>
